@@ -3,11 +3,10 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 
-// Load environment variables
+// Load credentials from environment variables
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
 
-// POST /api/feedback
 router.post('/', async (req, res) => {
   const data = req.body;
 
@@ -16,8 +15,8 @@ router.post('/', async (req, res) => {
       service: 'gmail',
       auth: {
         user: EMAIL_USER,
-        pass: EMAIL_PASS
-      }
+        pass: EMAIL_PASS,
+      },
     });
 
     await transporter.sendMail({
@@ -32,12 +31,12 @@ Email: ${data.email}
 Mood: ${data.mood}
 Comments: ${data.comments}
 Date: ${new Date().toLocaleString()}
-      `
+      `,
     });
 
     res.status(200).json({ message: 'Feedback sent successfully' });
-  } catch (err) {
-    console.error('Error sending email:', err);
+  } catch (error) {
+    console.error('Email error:', error);
     res.status(500).json({ message: 'Failed to send feedback' });
   }
 });
