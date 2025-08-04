@@ -6,6 +6,18 @@ const cors = require('cors');
 const feedbackRoutes = require('./routes/feedback');
 const app = express();
 
+const corsOptions = {
+  origin: 'https://eco-mind-sage.vercel.app',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
+app.use(express.json()); // Make sure this is also included before your routes
+
+
 app.use('/api/feedback', feedbackRoutes);
 
 app.use(cors({
