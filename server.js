@@ -3,15 +3,20 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-const feedbackRoutes = require('./routes/feedback');
-const app = express();
-
 const corsOptions = {
   origin: 'https://eco-mind-sage.vercel.app',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
+app.use(express.json()); // Always include before your routes
+
+
+const feedbackRoutes = require('./routes/feedback');
+const app = express();
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Handle preflight requests
