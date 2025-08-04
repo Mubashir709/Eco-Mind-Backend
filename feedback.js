@@ -1,20 +1,65 @@
+// const express = require('express');
+// const router = express.Router();
+// const Feedback = require('../models/Feedback');
+// const sendNotification = require('../utils/mailer');
+
+// router.post('/', async (req, res) => {
+//   console.log("✅ Feedback route hit");
+
+//   try {
+//     const feedback = new Feedback(req.body);
+//     await feedback.save();
+
+//     await sendNotification(req.body);
+//     res.status(201).json({ message: 'Feedback submitted successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Error saving feedback' });
+//   }
+// });
+
+module.exports = router;
+// routes/feedback.js
 const express = require('express');
 const router = express.Router();
-const Feedback = require('../models/Feedback');
-const sendNotification = require('../utils/mailer');
+const nodemailer = require('nodemailer');
 
+// Load environment variables
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
+
+// POST /api/feedback
 router.post('/', async (req, res) => {
-  console.log("✅ Feedback route hit");
+  const data = req.body;
 
   try {
-    const feedback = new Feedback(req.body);
-    await feedback.save();
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: EMAIL_USER,
+        pass: EMAIL_PASS
+      }
+    });
 
-    await sendNotification(req.body);
-    res.status(201).json({ message: 'Feedback submitted successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error saving feedback' });
+    await transporter.sendMail({
+      from: EMAIL_USER,
+      to: EMAIL_USER,
+      subject: 'New Feedback Received',
+      text: `
+You received new feedback:
+
+Name: ${data.name}
+Email: ${data.email}
+Mood: ${data.mood}
+Comments: ${data.comments}
+Date: ${new Date().toLocaleString()}
+      `
+    });
+
+    res.status(200).json({ message: 'Feedback sent successfully' });
+  } catch (err) {
+    console.error('Error sending email:', err);
+    res.status(500).json({ message: 'Failed to send feedback' });
   }
 });
 
