@@ -8,6 +8,12 @@ const feedbackRoutes = require('./routes/feedback');
 const app = express();
 
 app.use(cors());
+
+app.use(cors({
+  origin: 'https://eco-mind-sage.vercel.app',
+  methods: ['POST'],
+  credentials: true
+}));
 app.use(express.json());
 app.use('/api/feedback', feedbackRoutes);
 
